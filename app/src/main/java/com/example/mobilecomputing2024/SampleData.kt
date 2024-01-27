@@ -1,4 +1,4 @@
-package com.example.mobilecomputing2024
+import com.example.mobilecomputing2024.ui.messages.Message
 
 /**
  * SampleData for Jetpack Compose Tutorial 
