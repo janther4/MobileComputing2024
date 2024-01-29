@@ -16,7 +16,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -25,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
@@ -42,9 +46,11 @@ fun Conversation(
     messages: List<Message>
 ) {
     Column {
-        Text("Messages")
-        Button(onClick = { onNavigateToHome() }) {
-            Text("Go to home")
+        Button(onClick = { onNavigateToHome() },
+            modifier = Modifier.align(Alignment.End),
+            shape = CircleShape
+        ) {
+            Icon(imageVector = Icons.Filled.Settings, contentDescription = null)
         }
         LazyColumn {
             items(messages) { message ->
@@ -102,15 +108,6 @@ fun MessageCard(msg: Message) {
         }
     }
 }
-/*
-@Preview
-@Composable
-fun PreviewConversation(){
-    Mobilecomputing2024Theme {
-        com.example.mobilecomputing2024.Conversation(SampleData.conversationSample)
-    }
-}
-*/
 
 @Preview(name = "Light Mode")
 @Preview(
