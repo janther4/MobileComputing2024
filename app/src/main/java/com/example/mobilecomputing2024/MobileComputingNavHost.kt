@@ -27,16 +27,16 @@ fun MobileComputingNavHost(modifier: Modifier = Modifier,
                         inclusive = true
                     }
                 }
-            },
+                },
                 SampleData.conversationSample)
         }
         composable("home"){
             HomeScreen(
                 onNavigateToMessages = { navController.navigate("messages")
                 {
-                        popUpTo("home") {
-                            inclusive = true
-                        }
+                    popUpTo("messages") {
+                        inclusive = true
+                    }
                 }
                 }
             )

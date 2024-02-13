@@ -1,9 +1,11 @@
 package com.example.mobilecomputing2024.ui.messages
 
 import android.content.res.Configuration
+import android.net.Uri
+import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -24,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,14 +34,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.mobilecomputing2024.R
+import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
 import com.example.mobilecomputing2024.ui.theme.Mobilecomputing2024Theme
+import com.example.mobilecomputing2024.viewmodel.MyViewModel
+import kotlinx.coroutines.flow.Flow
 
 data class Message(val author: String, val body: String)
-
 
 @Composable
 fun Conversation(
@@ -64,15 +70,35 @@ fun Conversation(
 
 @Composable
 fun MessageCard(msg: Message) {
+    val viewModel: MyViewModel = viewModel()
+    val latestUser by viewModel.latestUser.collectAsState()
+    val latestImgUri by viewModel.latestImg.collectAsState()
+    val imageUri = latestImgUri?.let { Uri.parse(it.imgUri) }
+    // debug
+    Log.d("URI RESULT", "$imageUri")
+
     Row(modifier = Modifier.padding(all = 8.dp)) {
-        Image(
+            AsyncImage(
+                model = imageUri,
+                //model = "${latestImgUri?.imgUri}",
+                contentDescription = "Picture",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(50.dp)
+                    .border(
+                        BorderStroke(2.dp, Color.LightGray),
+                        CircleShape
+                    )
+                    .clip(CircleShape)
+            )
+            /*        Image(
             painter = painterResource(R.drawable.profile_picture),
             contentDescription = "Contact profile picture",
             modifier = Modifier
                 .size(40.dp)
                 .clip(CircleShape)
                 .border(1.5.dp, MaterialTheme.colorScheme.primary, CircleShape)
-        )
+        )*/
         Spacer(modifier = Modifier.width(8.dp))
 
         var isExpanded by remember{ mutableStateOf(false) }
@@ -81,15 +107,13 @@ fun MessageCard(msg: Message) {
             else MaterialTheme.colorScheme.surface,
             label = "",
         )
-
         Column (modifier = Modifier.clickable { isExpanded = !isExpanded }) {
             Text(
-                text = msg.author,
+                text = "${latestUser?.name}",
                 color = MaterialTheme.colorScheme.secondary,
                 style = MaterialTheme.typography.titleSmall
             )
             Spacer(modifier = Modifier.height(4.dp))
-
             Surface(
                 shape = MaterialTheme.shapes.medium,
                 shadowElevation = 1.dp,

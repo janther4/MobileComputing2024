@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -51,6 +52,18 @@ android {
 
 dependencies {
     val nav_version = "2.7.6"
+    val activity_version = "1.8.2"
+    val room_version = "2.6.1"
+
+    implementation("androidx.room:room-runtime:$room_version")
+    annotationProcessor("androidx.room:room-compiler:$room_version")
+
+    // To use Kotlin Symbol Processing (KSP)
+    ksp("androidx.room:room-compiler:$room_version")
+
+    implementation("androidx.activity:activity-ktx:$activity_version")
+    // Coil implementation
+    implementation("io.coil-kt:coil-compose:2.5.0")
 
     // Java language implementation
     implementation("androidx.navigation:navigation-fragment:$nav_version")
