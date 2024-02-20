@@ -1,8 +1,10 @@
 package com.example.mobilecomputing2024.ui.home
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.net.Uri
-import android.util.Log
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -29,13 +31,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.example.mobilecomputing2024.MainActivity
 import com.example.mobilecomputing2024.ui.theme.Mobilecomputing2024Theme
 import com.example.mobilecomputing2024.viewmodel.MyViewModel
-
 
 
 @Composable
@@ -59,16 +63,12 @@ fun HomeScreen(onNavigateToMessages: () -> Unit) {
     }
 
     //selectedImageUri = latestImgUri?.let { Uri.parse(it.imgUri) }
-    // debug
-    Log.d("hääääääääää", "$selectedImageUri")
-    //Log.d("jups", "$selectedImageUri")
 
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = { uri ->
             selectedImageUri = uri
-            // debug
-            Log.d("URI RESULT", "$uri")
+            //val flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
             // Convert URI to string and save to database
             uri?.let {
                 val imageUri = it.toString()
@@ -89,7 +89,6 @@ fun HomeScreen(onNavigateToMessages: () -> Unit) {
     }
 
 */
-
     Column {
         Button(
             onClick = { onNavigateToMessages() },
@@ -99,11 +98,9 @@ fun HomeScreen(onNavigateToMessages: () -> Unit) {
         }
         Text("User:")
         //selectedImageUri = latestImgUri?.let { Uri.parse(it.imgUri) }
-        // debug
-        Log.d("hääääääääää2232323", "$selectedImageUri")
-        selectedImageUri?.let { uri ->
+        //selectedImageUri?.let { uri ->
             AsyncImage(
-                model = uri,
+                model = selectedImageUri,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -120,19 +117,45 @@ fun HomeScreen(onNavigateToMessages: () -> Unit) {
                     }
             )
             //var text by remember { mutableStateOf("") }
-
+        //}
             OutlinedTextField(
                 value = viewModel.text,
                 onValueChange = { newText -> viewModel.text = newText },
                 label = { Text("Username") },
             )
-
             Button(onClick = { viewModel.onSaveButtonClick() }) {
                 Text("Save to Database")
             }
-        }
+            val context = LocalContext.current
+            var hasNotificationPermission by remember {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    mutableStateOf(
+                        ContextCompat.checkSelfPermission(
+                            context,
+                            Manifest.permission.POST_NOTIFICATIONS
+                        ) == PackageManager.PERMISSION_GRANTED
+                    )
+                } else mutableStateOf(true)
+            }
+            val permissionLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.RequestPermission(),
+                onResult = {isGranted ->
+                    hasNotificationPermission = isGranted
+                })
+            Button(onClick = { if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+            }) {
+                Text("Request permission")
+            }
+            Button(onClick = {
+                if(hasNotificationPermission) {
+                    MainActivity.showNotification(context, "Notifications enabled")
+                }
+                }) {
+                Text("Show notification")
+            }
     }
-
 }
 @Preview(name = "Light Mode")
 @Preview(

@@ -7,7 +7,7 @@ import com.example.mobilecomputing2024.entity.UserEntity
 
 @Database(
     entities = [UserEntity::class, ImgEntity::class],
-    version = 7,
+    version = 1,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

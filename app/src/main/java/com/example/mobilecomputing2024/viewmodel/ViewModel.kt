@@ -1,6 +1,5 @@
 package com.example.mobilecomputing2024.viewmodel
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -42,8 +41,6 @@ class MyViewModel : ViewModel() {
             val latestImg = imgDao.getLatestImg()
             // Update the StateFlow with the fetched data
             _latestImg.value = latestImg
-            // debug
-            Log.d("saatanansaatana", _latestImg.value?.imgUri ?:"jeejee")
         }
     }
 
@@ -59,21 +56,21 @@ class MyViewModel : ViewModel() {
     // Function to handle the button click or any other relevant action
     fun onSaveButtonClick() {
         viewModelScope.launch(Dispatchers.IO) {
-        val enteredText = text.trim()
+            val enteredText = text.trim()
 
-        if (enteredText.isNotEmpty()) {
-            // Create a User object and insert it into the database
-            val user = UserEntity(name = enteredText)
-            // Assuming you have a suspend function in your UserDao for inserting a user
-            userDao.insertUser(user)
+            if (enteredText.isNotEmpty()) {
+                // Create a User object and insert it into the database
+                val user = UserEntity(name = enteredText)
+                // Assuming you have a suspend function in your UserDao for inserting a user
+                userDao.insertUser(user)
 
-            viewModelScope.launch(Dispatchers.IO) {
-                loadLatestUser()
+                viewModelScope.launch(Dispatchers.IO) {
+                    loadLatestUser()
+                }
+
+                // Optionally, clear the text field after saving
+                //text = ""
             }
-
-            // Optionally, clear the text field after saving
-            //text = ""
-        }
         }
     }
 
@@ -85,4 +82,3 @@ class MyViewModel : ViewModel() {
         }
     }
 }
-
