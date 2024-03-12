@@ -7,10 +7,19 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.room.Room
 import com.example.mobilecomputing2024.database.AppDatabase
+import com.example.mobilecomputing2024.ui.home.SplashScreen
 import com.example.mobilecomputing2024.ui.theme.Mobilecomputing2024Theme
 
 
@@ -48,7 +57,21 @@ class MainActivity : ComponentActivity() {
         .build()
         setContent {
             Mobilecomputing2024Theme{
-                MobileComputingNavHost()
+                var showSplashScreen by remember { mutableStateOf(true) }
+
+                AnimatedVisibility(
+                    visible = showSplashScreen,
+                    exit = fadeOut(animationSpec = tween(durationMillis = 1000))
+                ) {
+                    SplashScreen(onSplashEnd = { showSplashScreen = false })
+                }
+
+                AnimatedVisibility(
+                    visible = !showSplashScreen,
+                    enter = fadeIn(animationSpec = tween(durationMillis = 1000))
+                ) {
+                    MobileComputingNavHost()
+                }
             }
         }
     }

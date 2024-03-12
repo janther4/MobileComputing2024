@@ -2,7 +2,6 @@ package com.example.mobilecomputing2024.ui.messages
 
 import android.content.res.Configuration
 import android.net.Uri
-import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
@@ -74,13 +73,10 @@ fun MessageCard(msg: Message) {
     val latestUser by viewModel.latestUser.collectAsState()
     val latestImgUri by viewModel.latestImg.collectAsState()
     val imageUri = latestImgUri?.let { Uri.parse(it.imgUri) }
-    // debug
-    Log.d("URI RESULT", "$imageUri")
 
     Row(modifier = Modifier.padding(all = 8.dp)) {
             AsyncImage(
                 model = imageUri,
-                //model = "${latestImgUri?.imgUri}",
                 contentDescription = "Picture",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -91,14 +87,6 @@ fun MessageCard(msg: Message) {
                     )
                     .clip(CircleShape)
             )
-            /*        Image(
-            painter = painterResource(R.drawable.profile_picture),
-            contentDescription = "Contact profile picture",
-            modifier = Modifier
-                .size(40.dp)
-                .clip(CircleShape)
-                .border(1.5.dp, MaterialTheme.colorScheme.primary, CircleShape)
-        )*/
         Spacer(modifier = Modifier.width(8.dp))
 
         var isExpanded by remember{ mutableStateOf(false) }

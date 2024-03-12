@@ -15,11 +15,9 @@ import kotlinx.coroutines.launch
 
 class MyViewModel : ViewModel() {
 
-    // Inject the UserDao
     private val userDao = MainActivity.database.userDao()
     private val imgDao = MainActivity.database.imgDao()
 
-    // MutableState for the text entered in the OutlinedTextField
     var text by mutableStateOf("")
 
     private val _latestUser = MutableStateFlow<UserEntity?>(null)
@@ -30,46 +28,35 @@ class MyViewModel : ViewModel() {
 
 
     init {
-        // Load the list of users when ViewModel is initialized
         loadLatestUser()
         loadLatestImg()
     }
 
     private fun loadLatestImg() {
         viewModelScope.launch {
-            // Fetch the list of users from the database
             val latestImg = imgDao.getLatestImg()
-            // Update the StateFlow with the fetched data
             _latestImg.value = latestImg
         }
     }
 
     private fun loadLatestUser() {
         viewModelScope.launch {
-            // Fetch the list of users from the database
             val latestUser = userDao.getLatestUser()
-            // Update the StateFlow with the fetched data
             _latestUser.value = latestUser
         }
     }
 
-    // Function to handle the button click or any other relevant action
     fun onSaveButtonClick() {
         viewModelScope.launch(Dispatchers.IO) {
             val enteredText = text.trim()
 
             if (enteredText.isNotEmpty()) {
-                // Create a User object and insert it into the database
                 val user = UserEntity(name = enteredText)
-                // Assuming you have a suspend function in your UserDao for inserting a user
                 userDao.insertUser(user)
 
                 viewModelScope.launch(Dispatchers.IO) {
                     loadLatestUser()
                 }
-
-                // Optionally, clear the text field after saving
-                //text = ""
             }
         }
     }
